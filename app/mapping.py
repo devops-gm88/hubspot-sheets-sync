@@ -60,7 +60,12 @@ def rows_from_contacts(contacts: list[dict], synced_at: str | None = None) -> tu
     return rows, collapsed
 
 
-def diff_rows(existing: list[list[str]], new_rows: list[list[str]], key_index: int = 0) -> dict:
+def diff_rows(
+    existing: list[list[str]],
+    new_rows: list[list[str]],
+    key_index: int = 0,
+    compare_columns: int | None = None,
+) -> dict:
     """Compare by key. Return appends, updates and the unchanged count.
 
     `existing` excludes the header row. Rows are compared cell by cell, so a changed
@@ -76,8 +81,9 @@ def diff_rows(existing: list[list[str]], new_rows: list[list[str]], key_index: i
             to_append.append(row)
             continue
         current = known[key]
-        comparable_new = row[:-1]
-        comparable_old = (current + [""] * len(row))[: len(comparable_new)]
+        width = compare_columns if compare_columns is not None else len(row) - 1
+        comparable_new = row[:width]
+        comparable_old = (current + [""] * width)[:width]
         if comparable_new == comparable_old:
             unchanged += 1
         else:

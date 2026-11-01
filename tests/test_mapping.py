@@ -68,3 +68,11 @@ def test_diff_detects_a_changed_name_as_an_update_not_a_second_row():
     diff = diff_rows(existing, new)
     assert diff["update"] == new
     assert diff["append"] == []
+
+
+def test_a_new_synced_at_alone_is_not_a_change():
+    existing = [["a@example.com", "Ann", "", "", "", "", "1", "t", "2026-10-31T00:00:00Z", "new"]]
+    new = [["a@example.com", "Ann", "", "", "", "", "1", "t", "2026-11-01T00:00:00Z", "new"]]
+    diff = diff_rows(existing, new, compare_columns=8)
+    assert diff["unchanged"] == 1
+    assert diff["update"] == []

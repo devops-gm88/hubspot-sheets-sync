@@ -57,6 +57,10 @@ SYNC_HEADER = [
 
 LOG_HEADER = ["run_at", "run_id", "mode", "seen", "written", "updated", "unchanged", "collapsed", "errors"]
 
+# Columns compared for a change: email .. hubspot_lastmodified.
+# synced_at and status are bookkeeping and must not trigger a rewrite.
+COMPARE_COLUMNS = 8
+
 MAX_ATTEMPTS = 4
 BASE_DELAY = 0.5
 WEBHOOK_TOLERANCE_MS = 300_000

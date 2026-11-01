@@ -64,3 +64,14 @@ def test_upsert_creates_the_tab_when_missing(sheets, sheets_transport):
     sheets.upsert_contacts("fresh", _rows([("a@example.com", "Ann")]))
     assert list(sheets_transport.tabs) == ["fresh"]
     assert sheets_transport.tabs["fresh"][0] == SYNC_HEADER
+
+
+def test_a_new_timestamp_alone_does_not_rewrite_the_row(sheets, sheets_transport):
+    contacts = [contact("1", "a@example.com", "Ann")]
+    from app.mapping import rows_from_contacts
+    first, _ = rows_from_contacts(contacts, synced_at="2026-10-31T00:00:00Z")
+    second, _ = rows_from_contacts(contacts, synced_at="2026-11-01T00:00:00Z")
+    sheets.upsert_contacts("contacts", first)
+    applied = sheets.upsert_contacts("contacts", second)
+    assert applied["appended"] == 0 and applied["updated"] == 0 and applied["unchanged"] == 1
+    assert sheets_transport.tabs["contacts"][1][8] == "2026-10-31T00:00:00Z"

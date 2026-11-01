@@ -8,7 +8,7 @@ from __future__ import annotations
 import urllib.parse
 from typing import Callable
 
-from .config import LOG_HEADER, SYNC_HEADER
+from .config import COMPARE_COLUMNS, LOG_HEADER, SYNC_HEADER
 from .http import Transport
 from .mapping import diff_rows
 
@@ -132,7 +132,7 @@ class Sheets:
         values = self.get_values(tab)
         header = values[0] if values else list(SYNC_HEADER)
         existing = values[1:] if len(values) > 1 else []
-        diff = diff_rows(existing, rows)
+        diff = diff_rows(existing, rows, compare_columns=COMPARE_COLUMNS)
 
         # status column is the last cell: mark what this run did
         appended = [row[:-1] + ["new"] for row in diff["append"]]
